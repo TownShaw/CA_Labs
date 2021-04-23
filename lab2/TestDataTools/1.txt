@@ -1,0 +1,36 @@
+
+1.om:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+00010054 <__bss_start-0x1074>:
+   10054:	000010b7          	lui	ra,0x1
+   10058:	00010f97          	auipc	t6,0x10
+   1005c:	00200113          	li	sp,2
+   10060:	00300193          	li	gp,3
+   10064:	00400213          	li	tp,4
+   10068:	00500293          	li	t0,5
+   1006c:	01f09313          	slli	t1,ra,0x1f
+   10070:	003103b3          	add	t2,sp,gp
+   10074:	00210433          	add	s0,sp,sp
+   10078:	fff00493          	li	s1,-1
+   1007c:	00530533          	add	a0,t1,t0
+   10080:	001085b3          	add	a1,ra,ra
+   10084:	40218633          	sub	a2,gp,sp
+   10088:	005246b3          	xor	a3,tp,t0
+   1008c:	00532733          	slt	a4,t1,t0
+   10090:	005337b3          	sltu	a5,t1,t0
+   10094:	00409093          	slli	ra,ra,0x4
+   10098:	00435813          	srli	a6,t1,0x4
+   1009c:	40435893          	srai	a7,t1,0x4
+   100a0:	00311113          	slli	sp,sp,0x3
+   100a4:	00335933          	srl	s2,t1,gp
+   100a8:	403359b3          	sra	s3,t1,gp
+   100ac:	00326233          	or	tp,tp,gp
+   100b0:	0050f0b3          	and	ra,ra,t0
+   100b4:	0014aa13          	slti	s4,s1,1
+   100b8:	0014ba93          	seqz	s5,s1
+   100bc:	00d3cb13          	xori	s6,t2,13
+   100c0:	00a3eb93          	ori	s7,t2,10
+   100c4:	0083fc13          	andi	s8,t2,8
