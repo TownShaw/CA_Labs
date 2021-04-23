@@ -54,8 +54,8 @@ module ControlUnit(
     assign JalrD = ;
     assign MemToRegD = ;
     assign LoadNpcD = ;
-    assign AluSrc2D = ;
     assign AluSrc1D = ;
+    assign AluSrc2D = ;
     
     always @(*)
     begin
