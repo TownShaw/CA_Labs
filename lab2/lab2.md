@@ -33,8 +33,7 @@
 
 ### 阶段二验收要求（30%）：
 
-* 我们提供了 1testAll.data、1testAll.inst、2testAll.data、2testAll.data、3testAll.data、
-3testAll.inst 三个测试样例的.inst 和.data 文件，用于初始化指令和数据的 Block Memory。
+* 我们提供了 1testAll.data、1testAll.inst、2testAll.data、2testAll.data、3testAll.data、3testAll.inst 三个测试样例的.inst 和.data 文件，用于初始化指令和数据的 Block Memory。
 * 对于任意一个测试样例，CPU 开始执行后 3 号寄存器的值会从 2 一直累增，该数字正在进行第多少项测试，执行结束后 3 号寄存器值变为 1
 * CPU 执行后，各寄存器值符合预期
 * 测试用的指令流中，除了阶段一的测试指令，还需要包含的指令包括 JALR、LB、LH、LW、LBU、LHU、SB、SH、SW、BEQ、BNE、BLT、BLTU、BGE、BGEU、JAL

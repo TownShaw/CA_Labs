@@ -89,19 +89,17 @@ module HarzardUnit(
             else
                 Forward2E <= 2'b00;
 
-            if (((Rs1E == RdM && RegReadE[1] == 1'b1) || (Rs2E == RdM && RegReadE[0] == 1'b1)) && RegWriteE != 3'b000 && MemToRegE == 1'b1)   //Load Inst && Data Relevent
+            if ((Rs1D == RdE || Rs2D == RdE) && MemToRegE == 1'b1)   //Load Inst && Data Relevent
             begin
-                stallF <= 1'b1;
-                stallD <= 1'b1;
-                stallE <= 1'b1;
-                FlushM <= 1'b1;
+                StallF <= 1'b1;
+                StallD <= 1'b1;
+                FlushE <= 1'b1;
             end
             else
             begin
-                stallF <= 1'b0;
-                stallD <= 1'b0;
-                stallE <= 1'b0;
-                FlushM <= 1'b0;
+                StallF <= 1'b0;
+                StallD <= 1'b0;
+                FlushE <= 1'b0;
             end
 
             if (BranchE == 1'b1 || JalE == 1'b1)                        //handle Jal && Jalr && Branch
@@ -126,6 +124,7 @@ module HarzardUnit(
 
             StallM <= 1'b0;
             StallW <= 1'b0;
+            FlushM <= 1'b0;
             FlushW <= 1'b0;
         end
     end
