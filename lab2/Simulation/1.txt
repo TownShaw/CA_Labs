@@ -11,7 +11,7 @@ Disassembly of section .text:
    10060:	00300193          	li	gp,3
    10064:	00400213          	li	tp,4
    10068:	00500293          	li	t0,5
-   1006c:	01309313          	slli	t1,ra,0x1f
+   1006c:	01309313          	slli	t1,ra,0x13
    10070:	003103b3          	add	t2,sp,gp
    10074:	00210433          	add	s0,sp,sp
    10078:	fff00493          	li	s1,-1

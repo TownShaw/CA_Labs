@@ -1,0 +1,36 @@
+
+test_1.om:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+00010054 <_start>:
+   10054:	00300413          	li	s0,3
+   10058:	00240493          	addi	s1,s0,2
+   1005c:	00100513          	li	a0,1
+   10060:	00000593          	li	a1,0
+   10064:	00848833          	add	a6,s1,s0
+   10068:	01080833          	add	a6,a6,a6
+   1006c:	00c02883          	lw	a7,12(zero) # c <_start-0x10048>
+   10070:	01088463          	beq	a7,a6,10078 <_next1>
+   10074:	0240006f          	j	10098 <_fail>
+
+00010078 <_next1>:
+   10078:	01002403          	lw	s0,16(zero) # 10 <_start-0x10044>
+   1007c:	01402483          	lw	s1,20(zero) # 14 <_start-0x10040>
+   10080:	00848833          	add	a6,s1,s0
+   10084:	01802883          	lw	a7,24(zero) # 18 <_start-0x1003c>
+   10088:	01088463          	beq	a7,a6,10090 <_next2>
+   1008c:	00c0006f          	j	10098 <_fail>
+
+00010090 <_next2>:
+   10090:	00a00033          	add	zero,zero,a0
+   10094:	00b00663          	beq	zero,a1,100a0 <_success>
+
+00010098 <_fail>:
+   10098:	00b02423          	sw	a1,8(zero) # 8 <_start-0x1004c>
+   1009c:	ffdff06f          	j	10098 <_fail>
+
+000100a0 <_success>:
+   100a0:	00a02423          	sw	a0,8(zero) # 8 <_start-0x1004c>
+   100a4:	ffdff06f          	j	100a0 <_success>

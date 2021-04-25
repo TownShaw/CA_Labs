@@ -1,0 +1,42 @@
+
+test_2.om:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+00010054 <_start>:
+   10054:	000004b3          	add	s1,zero,zero
+   10058:	0040006f          	j	1005c <_test0>
+
+0001005c <_test0>:
+   1005c:	00100513          	li	a0,1
+   10060:	00150513          	addi	a0,a0,1
+   10064:	00a50533          	add	a0,a0,a0
+   10068:	ffc50513          	addi	a0,a0,-4
+   1006c:	00050463          	beqz	a0,10074 <_next0>
+   10070:	0380006f          	j	100a8 <_fail>
+
+00010074 <_next0>:
+   10074:	00148493          	addi	s1,s1,1
+   10078:	0040006f          	j	1007c <_test1>
+
+0001007c <_test1>:
+   1007c:	00400013          	li	zero,4
+   10080:	00402503          	lw	a0,4(zero) # 4 <_start-0x10050>
+   10084:	00802583          	lw	a1,8(zero) # 8 <_start-0x1004c>
+   10088:	00b50633          	add	a2,a0,a1
+   1008c:	00c02023          	sw	a2,0(zero) # 0 <_start-0x10054>
+   10090:	00002683          	lw	a3,0(zero) # 0 <_start-0x10054>
+   10094:	00c02703          	lw	a4,12(zero) # c <_start-0x10048>
+   10098:	00e68463          	beq	a3,a4,100a0 <_next1>
+   1009c:	00c0006f          	j	100a8 <_fail>
+
+000100a0 <_next1>:
+   100a0:	00148493          	addi	s1,s1,1
+   100a4:	0080006f          	j	100ac <_success>
+
+000100a8 <_fail>:
+   100a8:	0000006f          	j	100a8 <_fail>
+
+000100ac <_success>:
+   100ac:	0000006f          	j	100ac <_success>
