@@ -13,10 +13,10 @@
 // !!! ALL YOU NEED TO CHANGE IS 4 FILE PATH BELOW !!!	
 //				(they are all optional, you can run cpu without change paths here,if files are failed to open, we will not dump the content to .txt and will not try to initial your bram)
 //////////////////////////////////////////////////////////////////////////////////
-`define DataRamContentLoadPath "D:\\Vivado\\CA_lab\\testbench\\1testAll.data"           //修改此处为测试数据路径
-`define InstRamContentLoadPath "D:\\Vivado\\CA_lab\\testbench\\1testAll.inst"           //修改此处为测试数据路径
-`define DataRamContentSavePath "D:\\Vivado\\CA_lab\\testbench\\DataRamContent.txt"      //修改此处为测试数据路径
-`define InstRamContentSavePath "D:\\Vivado\\CA_lab\\testbench\\InstRamContent.txt"      //修改此处为测试数据路径
+`define DataRamContentLoadPath "D:\\Vivado\\CA_lab\\testbench\\1testAll.data"           //修改此处为测试数据路�?
+`define InstRamContentLoadPath "E:\\Codes\\Git_Repos\\CA_Labs\\lab2\\TestDataTools\\1.inst"           //修改此处为测试数据路�?
+`define DataRamContentSavePath "D:\\Vivado\\CA_lab\\testbench\\DataRamContent.txt"      //修改此处为测试数据路�?
+`define InstRamContentSavePath "D:\\Vivado\\CA_lab\\testbench\\InstRamContent.txt"      //修改此处为测试数据路�?
 `define BRAMWORDS 4096  //a word is 32bit, so our bram is 4096*32bit
 
 module testBench(
@@ -64,16 +64,21 @@ module testBench(
         CPU_Debug_InstRAM_WE2 = 4'b0;
         CPU_Debug_DataRAM_A2 = 32'b0;
         CPU_Debug_InstRAM_A2 = 32'b0;
-        CPU_CLK=1'b0;
+        CPU_CLK=1'b1;
         CPU_RST = 1'b0;
         #10
+//        #10;   
+//        CPU_RST = 1'b1;
+//        #10;   
+//        CPU_RST = 1'b0;
+//        #400000 	
         
         $display("Loading DataRam Content from file..."); 
         LoadDataRamFile = $fopen(`DataRamContentLoadPath,"r");
         if(LoadDataRamFile==0)
             $display("Failed to Open %s, Do Not Load DataRam values from file!",`DataRamContentLoadPath);
         else    begin  
-            CPU_Debug_DataRAM_A2 = 32'h0;     
+            CPU_Debug_DataRAM_A2 = 32'h0;
             $fscanf(LoadDataRamFile,"%h",CPU_Debug_DataRAM_WD2);
             if($feof(LoadDataRamFile))
                 CPU_Debug_DataRAM_WE2 = 4'b0;
@@ -105,7 +110,7 @@ module testBench(
             else
                 CPU_Debug_InstRAM_WE2 = 4'b1111;
             #10
-            for(i=0;i<`BRAMWORDS;i=i+1)
+            for(i=0;i</*`BRAMWORDS*/36;i=i+1)
             begin
                 if($feof(LoadInstRamFile))
                     CPU_Debug_InstRAM_WE2 = 4'b0;
@@ -119,9 +124,9 @@ module testBench(
         end
         
         $display("Start Instruction Execution!"); 
-        #10;   
+        #10;
         CPU_RST = 1'b1;
-        #10;   
+        #10;
         CPU_RST = 1'b0;
         #400000 												// waiting for instruction Execution to End
         $display("Finish Instruction Execution!"); 
