@@ -9,10 +9,10 @@
 // Tool Versions: Vivado 2017.4.1
 // Description: Decide whether to branch 
 //////////////////////////////////////////////////////////////////////////////////
-//功能和接口说明
+//功能和接口说�?
     //BranchDecisionMaking接受两个操作数，根据BranchTypeE的不同，进行不同的判断，当分支应该taken时，令BranchE=1'b1
-    //BranchTypeE的类型定义在Parameters.v中
-//推荐格式：
+    //BranchTypeE的类型定义在Parameters.v�?
+//推荐格式�?
     //case()
     //    `BEQ: ???
     //      .......
@@ -33,14 +33,14 @@ module BranchDecisionMaking(
         case (BranchTypeE)
             `BEQ: BranchE <= (Operand1 == Operand2) ? 1'b1 : 1'b0;
             `BNE: BranchE <= (Operand1 == Operand2) ? 1'b0 : 1'b1;
-            `BLT: BranchE <= (signed(Operand1) < signed(Operand2)) ? 1'b1: 1'b0;
-            `BLTU: BranchE <= (unsigned(Operand1) < unsigned(Operand2)) ? 1'b1 : 1'b0;
-            `BGE: BranchE <= (signed(Operand1) >= signed(Operand2)) ? 1'b1 : 1'b0;
-            `BGEU: BranchE <= (unsigned(Operand1) >= unsigned(Operand2)) ? 1'b1 : 1'b0;
+            `BLT: BranchE <= ($signed(Operand1) < $signed(Operand2)) ? 1'b1: 1'b0;
+            `BLTU: BranchE <= ($unsigned(Operand1) < $unsigned(Operand2)) ? 1'b1 : 1'b0;
+            `BGE: BranchE <= ($signed(Operand1) >= $signed(Operand2)) ? 1'b1 : 1'b0;
+            `BGEU: BranchE <= ($unsigned(Operand1) >= $unsigned(Operand2)) ? 1'b1 : 1'b0;
             default: BranchE <= 1'b0;
         endcase
     end
-    // 请补全此处代码
+    // 请补全此处代�?
 
 endmodule
 

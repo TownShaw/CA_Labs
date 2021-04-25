@@ -10,7 +10,7 @@
 // Description: Top level of our CPU Core
 //////////////////////////////////////////////////////////////////////////////////
 //功能说明
-    //RV32I 指令集CPU的顶层模块
+    //RV32I 指令集CPU的顶层模�?
 //实验要求  
     //无需修改
 
@@ -95,7 +95,7 @@ module RV32Core(
     assign ForwardData2 = Forward2E[1]?(AluOutM):( Forward2E[0]?RegWriteData:RegOut2E );
     assign Operand2 = AluSrc2E[1]?(ImmE):( AluSrc2E[0]?Rs2E:ForwardData2 );
     assign ResultM = LoadNpcM ? (PCM+4) : AluOutM;
-    assign RegWriteData = ~MemToRegW?ResultW:DM_RD_Ext;
+    assign RegWriteData = ~MemToRegW?ResultW:DM_RD_Ext;     //MemToReg = 0 <--> ResultW, MemToReg = 1 <--> DM_RD_Ext
 
     //Module connections
     // ---------------------------------------------
