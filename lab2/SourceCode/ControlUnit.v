@@ -61,12 +61,13 @@ module ControlUnit(
     always @(*)
     begin
         case (Op)
-            7'b0010011: // SLLI/SRLI/SRAI
+            7'b0010011: // SLLI/SRLI/SRAI/ADDI/*I
             begin
                 RegWriteD <= `LW;
                 BranchTypeD <= `NOBRANCH;
                 ImmType <= `ITYPE;
                 MemWriteD <= 3'd0;
+                RegReadD <= 2'b10;
                 case (Fn3)
                     3'b000: AluContrlD <= `ADD;     //ADDI
                     3'b001: AluContrlD <= `SLL;     //SLLI
@@ -101,6 +102,7 @@ module ControlUnit(
                 BranchTypeD <= `NOBRANCH;
                 ImmType <= `RTYPE;
                 MemWriteD <= 3'd0;
+                RegReadD <= 2'b11;
                 case (Fn3)
                     3'b000:
                     begin
@@ -150,6 +152,7 @@ module ControlUnit(
                 ImmType <= `UTYPE;
                 MemWriteD <= 3'd0;
                 AluContrlD <= `LUI;
+                RegReadD <= 2'b00;
             end
             7'b0010111: //AUIPC
             begin
@@ -158,22 +161,25 @@ module ControlUnit(
                 ImmType <= `UTYPE;
                 MemWriteD <= 3'd0;
                 AluContrlD <= `ADD;
+                RegReadD <= 2'b00;
             end
             7'b1100111: //JALR
             begin
-                RegWriteD <= `NOREGWRITE;
+                RegWriteD <= `LW;
                 BranchTypeD <= `NOBRANCH;
                 ImmType <= `ITYPE;
                 MemWriteD <= 3'd0;
                 AluContrlD <= `ADD;
+                RegReadD <= 2'b10;
             end
             7'b1101111: //JAL
             begin
-                RegWriteD <= `NOREGWRITE;
+                RegWriteD <= `LW;
                 BranchTypeD <= `NOBRANCH;
                 ImmType <= `JTYPE;
                 MemWriteD <= 3'd0;
                 AluContrlD <= `ADD;
+                RegReadD <= 2'b00;
             end
             7'b1100011: //Branch
             begin
@@ -181,6 +187,7 @@ module ControlUnit(
                 ImmType <= `ITYPE;
                 MemWriteD <= 3'd0;
                 AluContrlD <= `ADD;
+                RegReadD <= 2'b11;
                 case (Fn3)
                     3'b000: BranchTypeD <= `BEQ;        //BEQ
                     3'b001: BranchTypeD <= `BNE;        //BNE
@@ -197,6 +204,7 @@ module ControlUnit(
                 ImmType <= `ITYPE;
                 MemWriteD <= 3'd0;
                 AluContrlD <= `ADD;
+                RegReadD <= 2'b10;
                 case (Fn3)
                     3'b000: RegWriteD <= `LB;
                     3'b001: RegWriteD <= `LH;
@@ -212,6 +220,7 @@ module ControlUnit(
                 BranchTypeD <= `NOBRANCH;
                 ImmType <= `STYPE;
                 AluContrlD <= `ADD;
+                RegReadD <= 2'b11;
                 case (Fn3)
                     3'b000: MemWriteD <= 4'b0001;   //SB
                     3'b001: MemWriteD <= 4'b0011;   //SH
@@ -219,17 +228,18 @@ module ControlUnit(
                     default: MemWriteD <= 4'b0000;  //Anything
                 endcase
             end
-            default:
+            default:    //Anything
             begin
                 RegWriteD <= `NOREGWRITE;
                 MemWriteD <= 3'd0;
                 BranchTypeD <= `NOBRANCH;
                 ImmType <= `RTYPE;
                 AluContrlD <= `ADD;
+                RegReadD <= 2'b00;
             end
         endcase
     end
-    // 请补全此处代�?
+    // 请补全此处代码
 
 endmodule
 
