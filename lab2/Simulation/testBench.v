@@ -13,10 +13,10 @@
 // !!! ALL YOU NEED TO CHANGE IS 4 FILE PATH BELOW !!!	
 //				(they are all optional, you can run cpu without change paths here,if files are failed to open, we will not dump the content to .txt and will not try to initial your bram)
 //////////////////////////////////////////////////////////////////////////////////
-`define DataRamContentLoadPath "D:\\Vivado\\CA_lab\\testbench\\1testAll.data"           //修改此处为测试数据路�?
-`define InstRamContentLoadPath "E:\\Codes\\Git_Repos\\CA_Labs\\lab2\\TestDataTools\\1.inst"           //修改此处为测试数据路�?
-`define DataRamContentSavePath "D:\\Vivado\\CA_lab\\testbench\\DataRamContent.txt"      //修改此处为测试数据路�?
-`define InstRamContentSavePath "D:\\Vivado\\CA_lab\\testbench\\InstRamContent.txt"      //修改此处为测试数据路�?
+`define DataRamContentLoadPath "D:\\Vivado\\CA_lab\\testbench\\1testAll.data"           //修改此处为测试数据路�?
+`define InstRamContentLoadPath "E:\\Codes\\Git_Repos\\CA_Labs\\lab2\\TestDataTools\\1.inst"           //修改此处为测试数据路�?
+`define DataRamContentSavePath "D:\\Vivado\\CA_lab\\testbench\\DataRamContent.txt"      //修改此处为测试数据路�?
+`define InstRamContentSavePath "D:\\Vivado\\CA_lab\\testbench\\InstRamContent.txt"      //修改此处为测试数据路�?
 `define BRAMWORDS 4096  //a word is 32bit, so our bram is 4096*32bit
 
 module testBench(
@@ -110,7 +110,7 @@ module testBench(
             else
                 CPU_Debug_InstRAM_WE2 = 4'b1111;
             #10
-            for(i=0;i</*`BRAMWORDS*/36;i=i+1)
+            for(i=0;i<`BRAMWORDS;i=i+1)
             begin
                 if($feof(LoadInstRamFile))
                     CPU_Debug_InstRAM_WE2 = 4'b0;
