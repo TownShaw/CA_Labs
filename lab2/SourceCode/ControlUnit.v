@@ -184,9 +184,9 @@ module ControlUnit(
             7'b1100011: //Branch
             begin
                 RegWriteD <= `NOREGWRITE;
-                ImmType <= `ITYPE;
+                ImmType <= `BTYPE;
                 MemWriteD <= 3'd0;
-                AluContrlD <= `ADD;
+                AluContrlD <= `SUB;                     //Anything
                 RegReadD <= 2'b11;
                 case (Fn3)
                     3'b000: BranchTypeD <= `BEQ;        //BEQ

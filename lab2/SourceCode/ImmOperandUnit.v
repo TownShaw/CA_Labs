@@ -10,19 +10,19 @@
 // Description: Generate different type of Immediate Operand
 //////////////////////////////////////////////////////////////////////////////////
 //功能说明
-    //ImmOperandUnit利用正在被译码的指令的部分编码�?�，生成不同类型�?32bit立即�?
+    //ImmOperandUnit利用正在被译码的指令的部分编码值，生成不同类型的32bit立即数
 //输入
-    //IN        是指令除了opcode以外的部分编码�??
-    //Type      表示立即数编码类型，全部类型定义在Parameters.v�?
+    //IN        是指令除了opcode以外的部分编码值
+    //Type      表示立即数编码类型，全部类型定义在Parameters.v中
 //输出
-    //OUT       表示指令对应的立即数32bit实际�?
+    //OUT       表示指令对应的立即数32bit实际值
 //实验要求  
-    //补全ImmOperandUnit模块，需补全的片段截取如�?  
+    //补全ImmOperandUnit模块，需补全的片段截取如下  
     //always@(*)
     //begin
     //    case(Type)
     //        `ITYPE: Out<={ {21{In[31]}}, In[30:20] };
-    //        //......                                        //请完善代�?
+    //        //......                                        //请完善代码
     //        default:Out<=32'hxxxxxxxx;
     //    endcase
     //end
@@ -37,12 +37,12 @@ module ImmOperandUnit(
     always @(*)
     begin
         case(Type)
-            `ITYPE: Out <= { {20{In[31]}}, In[31:20] };
-            `STYPE: Out <= { {20{In[31]}}, In[31:25], In[11:7] };
-            `BTYPE: Out <= { {20{In[31]}}, In[7], In[30:25], In[11:8], 1'b0 };
-            `UTYPE: Out <= { In[31:12], 12'd0 };
-            `JTYPE: Out <= { {12{In[31]}}, In[19:12], In[20], In[30:21], 1'b0 };
-            //......                                        //请完善代�?
+            `ITYPE:  Out <= { {20{In[31]}}, In[31:20] };
+            `STYPE:  Out <= { {20{In[31]}}, In[31:25], In[11:7] };
+            `BTYPE:  Out <= { {20{In[31]}}, In[7], In[30:25], In[11:8], 1'b0 };
+            `UTYPE:  Out <= { In[31:12], 12'd0 };
+            `JTYPE:  Out <= { {12{In[31]}}, In[19:12], In[20], In[30:21], 1'b0 };
+            //......                                        //请完善代码
             default:Out <= 32'hxxxxxxxx;
         endcase
     end

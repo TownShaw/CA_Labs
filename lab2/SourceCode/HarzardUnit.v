@@ -24,7 +24,7 @@
     //StallF, FlushF, StallD, FlushD, StallE, FlushE, StallM, FlushM, StallW, FlushW    控制五个段寄存器进行stall（维持状态不变）和flush（清零）
     //Forward1E, Forward2E                                                              控制forward
 //实验要求  
-    //补全模块  
+    //补全模块
     
     
 module HarzardUnit(
@@ -59,14 +59,14 @@ module HarzardUnit(
 
             if (Rs1E == RdM && RegWriteM != 3'b000)                     //handle Rs1E
             begin
-                if (RegReadE[1] == 1'b1)
+                if (RegReadE[1] == 1'b1 && RdM != 5'd0)
                     Forward1E <= 2'b10;                                 //data comes from AluOutM
                 else
                     Forward1E <= 2'b00;
             end
             else if (Rs1E == RdW && RegWriteW != 3'b000)
             begin
-                if (RegReadE[1] == 1'b1)
+                if (RegReadE[1] == 1'b1 && RdW != 5'd0)
                     Forward1E <= 2'b01;                                 //data comes from RegWriteData
                 else
                     Forward1E <= 2'b00;
@@ -76,15 +76,17 @@ module HarzardUnit(
             
             if (Rs2E == RdM && RegWriteM != 3'b000)                     //handle Rs2E
             begin
-                if (RegReadE[2] == 1'b1)
+                if (RegReadE[0] == 1'b1 && RdM != 5'd0)
                     Forward2E <= 2'b10;                                 //data comes from AluOutM
                 else
                     Forward2E <= 2'b00;
             end
             else if (Rs2E == RdW && RegWriteW != 3'b000)
             begin
-                if (RegReadE[2] == 1'b1)
+                if (RegReadE[0] == 1'b1 && RdW != 5'd0)
                     Forward2E <= 2'b01;                                 //data comes from RegWriteData
+                else
+                    Forward2E <= 2'b00;
             end
             else
                 Forward2E <= 2'b00;
@@ -93,37 +95,34 @@ module HarzardUnit(
             begin
                 StallF <= 1'b1;
                 StallD <= 1'b1;
-                FlushE <= 1'b1;
             end
             else
             begin
                 StallF <= 1'b0;
                 StallD <= 1'b0;
-                FlushE <= 1'b0;
             end
 
-            if (BranchE == 1'b1 || JalE == 1'b1)                        //handle Jal && Jalr && Branch
+            if (BranchE == 1'b1 || JalrE == 1'b1)                        //handle Jal && Jalr && Branch
             begin
-                FlushF <= 1'b1;
                 FlushD <= 1'b1;
-                FlushE <= 1'b1;
             end
             else if (JalD == 1'b1)
             begin
-                FlushF <= 1'b1;
                 FlushD <= 1'b1;
-                FlushE <= 1'b0;
             end
             else
             begin
-                FlushF <= 1'b0;
                 FlushD <= 1'b0;
-                FlushE <= 1'b0;
             end
 
+            if (((Rs1D == RdE || Rs2D == RdE) && MemToRegE == 1'b1) || (BranchE == 1'b1 || JalrE == 1'b1))  //when load or branch, FlushE
+                FlushE <= 1'b1;
+            else
+                FlushE <= 1'b0;
 
             StallM <= 1'b0;
             StallW <= 1'b0;
+            FlushF <= 1'b0;
             FlushM <= 1'b0;
             FlushW <= 1'b0;
         end

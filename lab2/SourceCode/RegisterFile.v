@@ -12,8 +12,8 @@
 //功能说明
     //上升沿写入，异步读的寄存器堆，0号寄存器值始终为32'b0
     //在接入RV32Core时，输入为~clk，因此本模块时钟输入和其他部件始终相反
-    //等价于例化本模块时正常接入时钟clk，同时修改代码为always@(negedge clk or negedge rst) 
-//实验要求  
+    //等价于例化本模块时正常接入时钟clk，同时修改代码为always@(negedge clk or negedge rst)
+//实验要求
     //无需修改
 
 module RegisterFile(
@@ -37,7 +37,9 @@ module RegisterFile(
         else if( (WE3==1'b1) && (A3!=5'b0) )    RegFile[A3]<=WD3;   
     end
     //    
-    assign RD1= (A1==5'b0)?32'b0:RegFile[A1];
-    assign RD2= (A2==5'b0)?32'b0:RegFile[A2];
+//    assign RD1= (A3 == A1 && WE3 == 1'b1) ? WD3 : ((A1==5'b0)?32'b0:RegFile[A1]);  //Forwarding
+//    assign RD2= (A3 == A2 && WE3 == 1'b1) ? WD3 : ((A2==5'b0)?32'b0:RegFile[A2]);
+    assign RD1= (A1==5'b0) ? 32'b0 : ((A3 == A1 && WE3 == 1'b1) ? WD3 : RegFile[A1]);  //Forwarding
+    assign RD2= (A2==5'b0) ? 32'b0 : ((A3 == A2 && WE3 == 1'b1) ? WD3 : RegFile[A2]);
     
 endmodule
