@@ -83,11 +83,43 @@ module WBSegReg(
         end
 
     wire [31:0] RD_raw;
+    reg [3:0] WE_NEW;
+    reg [31:0] WD_NEW;
+    always @(*)
+    begin
+        case(A[1:0])
+            2'b00:
+            begin
+                WE_NEW <= WE;
+                WD_NEW <= WD;
+            end
+            2'b01:
+            begin
+                WE_NEW <= WE << 1;
+                WD_NEW <= WD << 8;
+            end
+            2'b10:
+            begin
+                WE_NEW <= WE << 2;
+                WD_NEW <= WD << 16;
+            end
+            2'b11:
+            begin
+                WE_NEW <= WE << 3;
+                WD_NEW <= WD << 24;
+            end
+            default:
+            begin
+                WE_NEW <= WE;
+                WD_NEW <= WD;
+            end
+        endcase
+    end
     DataRam DataRamInst (
         .clk    ( clk            ),                      //请完善代码
-        .wea    ( WE             ),                      //请完善代码
+        .wea    ( WE_NEW         ),                      //请完善代码
         .addra  ( A[31:2]        ),                      //请完善代码
-        .dina   ( WD             ),                      //请完善代码
+        .dina   ( WD_NEW         ),                      //请完善代码
         .douta  ( RD_raw         ),
         .web    ( WE2            ),
         .addrb  ( A2[31:2]       ),

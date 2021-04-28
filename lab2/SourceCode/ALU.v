@@ -33,9 +33,9 @@ module ALU(
     always @(*)
     begin
         case(AluContrl)
-            `SLL: AluOut <= Operand1 << Operand2;
-            `SRL: AluOut <= Operand1 >> Operand2;
-            `SRA: AluOut <= $signed(Operand1) >>> Operand2;
+            `SLL: AluOut <= Operand1 << Operand2[4:0];
+            `SRL: AluOut <= Operand1 >> Operand2[4:0];
+            `SRA: AluOut <= $signed(Operand1) >>> Operand2[4:0];
             `ADD: AluOut <= Operand1 + Operand2;
             `SUB: AluOut <= Operand1 - Operand2;
             `XOR: AluOut <= Operand1 ^ Operand2;

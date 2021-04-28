@@ -55,35 +55,35 @@ always @ (posedge clk)
     doutb <= addrb_valid ? ram_cell[addrbl] : 0;
 
 always @ (posedge clk)
-    if(wea[0] & addra_valid) 
+    if(wea[0] & addra_valid)
         ram_cell[addral][ 7: 0] <= dina[ 7: 0];
         
 always @ (posedge clk)
-    if(wea[1] & addra_valid) 
+    if(wea[1] & addra_valid)
         ram_cell[addral][15: 8] <= dina[15: 8];
         
 always @ (posedge clk)
-    if(wea[2] & addra_valid) 
+    if(wea[2] & addra_valid)
         ram_cell[addral][23:16] <= dina[23:16];
         
 always @ (posedge clk)
-    if(wea[3] & addra_valid) 
+    if(wea[3] & addra_valid)
         ram_cell[addral][31:24] <= dina[31:24];
         
 always @ (posedge clk)
-    if(web[0] & addrb_valid) 
+    if(web[0] & addrb_valid)
         ram_cell[addrbl][ 7: 0] <= dinb[ 7: 0];
                 
 always @ (posedge clk)
-    if(web[1] & addrb_valid) 
+    if(web[1] & addrb_valid)
         ram_cell[addrbl][15: 8] <= dinb[15: 8];
                 
 always @ (posedge clk)
-    if(web[2] & addrb_valid) 
+    if(web[2] & addrb_valid)
         ram_cell[addrbl][23:16] <= dinb[23:16];
                 
 always @ (posedge clk)
-    if(web[3] & addrb_valid) 
+    if(web[3] & addrb_valid)
         ram_cell[addrbl][31:24] <= dinb[31:24];
 
 endmodule
