@@ -34,25 +34,27 @@ module HarzardUnit(
     input wire [1:0] RegReadE,
     input wire MemToRegE,
     input wire [2:0] RegWriteM, RegWriteW,
+    input wire CSRReadE, CSRWriteM, CSRWriteW,
     output reg StallF, FlushF, StallD, FlushD, StallE, FlushE, StallM, FlushM, StallW, FlushW,
-    output reg [1:0] Forward1E, Forward2E
+    output reg [1:0] Forward1E, Forward2E,
+    output reg ForwardCSRE
     );
     always @(*)
     begin
         if (CpuRst)
         begin
-            StallF <= 1'b0;
-            FlushF <= 1'b1;
-            StallD <= 1'b0;
-            FlushD <= 1'b1;
-            StallE <= 1'b0;
-            FlushE <= 1'b1;
-            StallM <= 1'b0;
-            FlushM <= 1'b1;
-            StallW <= 1'b0;
-            FlushW <= 1'b1;
-            Forward1E <= 2'b00;
-            Forward2E <= 2'b00;
+            StallF = 1'b0;
+            FlushF = 1'b1;
+            StallD = 1'b0;
+            FlushD = 1'b1;
+            StallE = 1'b0;
+            FlushE = 1'b1;
+            StallM = 1'b0;
+            FlushM = 1'b1;
+            StallW = 1'b0;
+            FlushW = 1'b1;
+            Forward1E = 2'b00;
+            Forward2E = 2'b00;
         end
         else
         begin
@@ -60,71 +62,71 @@ module HarzardUnit(
             if (Rs1E == RdM && RegWriteM != 3'b000)                     //handle Rs1E
             begin
                 if (RegReadE[1] == 1'b1 && RdM != 5'd0)
-                    Forward1E <= 2'b10;                                 //data comes from AluOutM
+                    Forward1E = 2'b10;                                 //data comes from AluOutM
                 else
-                    Forward1E <= 2'b00;
+                    Forward1E = 2'b00;
             end
             else if (Rs1E == RdW && RegWriteW != 3'b000)
             begin
                 if (RegReadE[1] == 1'b1 && RdW != 5'd0)
-                    Forward1E <= 2'b01;                                 //data comes from RegWriteData
+                    Forward1E = 2'b01;                                 //data comes from RegWriteData
                 else
-                    Forward1E <= 2'b00;
+                    Forward1E = 2'b00;
             end
             else
-                Forward1E <= 2'b00;
+                Forward1E = 2'b00;
             
             if (Rs2E == RdM && RegWriteM != 3'b000)                     //handle Rs2E
             begin
                 if (RegReadE[0] == 1'b1 && RdM != 5'd0)
-                    Forward2E <= 2'b10;                                 //data comes from AluOutM
+                    Forward2E = 2'b10;                                 //data comes from AluOutM
                 else
-                    Forward2E <= 2'b00;
+                    Forward2E = 2'b00;
             end
             else if (Rs2E == RdW && RegWriteW != 3'b000)
             begin
                 if (RegReadE[0] == 1'b1 && RdW != 5'd0)
-                    Forward2E <= 2'b01;                                 //data comes from RegWriteData
+                    Forward2E = 2'b01;                                 //data comes from RegWriteData
                 else
-                    Forward2E <= 2'b00;
+                    Forward2E = 2'b00;
             end
             else
-                Forward2E <= 2'b00;
+                Forward2E = 2'b00;
 
             if ((Rs1D == RdE || Rs2D == RdE) && MemToRegE == 1'b1)   //Load Inst && Data Relevent
             begin
-                StallF <= 1'b1;
-                StallD <= 1'b1;
+                StallF = 1'b1;
+                StallD = 1'b1;
             end
             else
             begin
-                StallF <= 1'b0;
-                StallD <= 1'b0;
+                StallF = 1'b0;
+                StallD = 1'b0;
             end
 
             if (BranchE == 1'b1 || JalrE == 1'b1)                        //handle Jal && Jalr && Branch
             begin
-                FlushD <= 1'b1;
+                FlushD = 1'b1;
             end
             else if (JalD == 1'b1)
             begin
-                FlushD <= 1'b1;
+                FlushD = 1'b1;
             end
             else
             begin
-                FlushD <= 1'b0;
+                FlushD = 1'b0;
             end
 
             if (((Rs1D == RdE || Rs2D == RdE) && MemToRegE == 1'b1) || (BranchE == 1'b1 || JalrE == 1'b1))  //when load or branch, FlushE
-                FlushE <= 1'b1;
+                FlushE = 1'b1;
             else
-                FlushE <= 1'b0;
+                FlushE = 1'b0;
 
-            StallM <= 1'b0;
-            StallW <= 1'b0;
-            FlushF <= 1'b0;
-            FlushM <= 1'b0;
-            FlushW <= 1'b0;
+            StallM = 1'b0;
+            StallW = 1'b0;
+            FlushF = 1'b0;
+            FlushM = 1'b0;
+            FlushW = 1'b0;
         end
     end
     // assign ForwardData1 = Forward1E[1] ? (AluOutM) : ( Forward1E[0] ? RegWriteData : RegOut1E );
