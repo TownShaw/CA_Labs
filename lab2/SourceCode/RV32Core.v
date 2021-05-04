@@ -90,7 +90,7 @@ module RV32Core(
     wire CSRRead, csrrwD, csrrwE;
     wire CSRWriteD, CSRWriteE, CSRWriteM, CSRWriteW;
     wire CSRReadD, CSRReadE, CSRReadM, CSRReadW;
-    wire [31:0] CSRD, CSRE, CSRM, CSRW, CSR_Result;
+    wire [31:0] CSRD, CSRE, CSRM, CSRW, CSR_Result, RegWriteData_plus_CSR;
     //wire values assignments
     assign {Funct7D, Rs2D, Rs1D, Funct3D, RdD, OpCodeD} = Instr;
     assign JalNPC=ImmD+PCD;
@@ -100,7 +100,8 @@ module RV32Core(
     assign ForwardData2 = Forward2E[1]?(AluOutM):( Forward2E[0]?RegWriteData:RegOut2E );
     assign Operand2 = CSRReadE ? CSRE : (AluSrc2E[1] ? (ImmE) : ( AluSrc2E[0] ? Rs2E : ForwardData2 ));
     assign ResultM = LoadNpcM ? (PCM+4) : AluOutM;
-    assign RegWriteData = CSRReadW ? CSRW : (~MemToRegW ? ResultW : DM_RD_Ext);     //MemToReg = 0 <--> ResultW, MemToReg = 1 <--> DM_RD_Ext
+    assign RegWriteData = (~MemToRegW ? ResultW : DM_RD_Ext);     //MemToReg = 0 <--> ResultW, MemToReg = 1 <--> DM_RD_Ext
+    assign RegWriteData_plus_CSR = CSRReadW ? CSRW : RegWriteData;
     assign CSR_Result = csrrwE ? CSRE : AluOutE;            // 若是 CSRRW | CSRRWI 指令则直接传 CSRE 到之后的段, 否则传对 CSR 的运算结果
 
     //Module connections
@@ -140,7 +141,7 @@ module RV32Core(
         .WE2(CPU_Debug_InstRAM_WE2),
         .RD2(CPU_Debug_InstRAM_RD2),
         .PCF(PCF),
-        .PCD(PCD) 
+        .PCD(PCD)
     );
 
     ControlUnit ControlUnit1(
@@ -181,8 +182,8 @@ module RV32Core(
         .RD1(RegOut1D),
         .RD2(RegOut2D),
         .CSR_WE(CSRWriteW),
-        .WD_CSR(CSRW),
-        .RD_CSR(ResultW),
+        .WD_CSR(ResultW),
+        .RD_CSR(CSRD)
     );
 
     // ---------------------------------------------

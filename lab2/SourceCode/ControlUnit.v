@@ -67,7 +67,7 @@ module ControlUnit(
             7'b0010011: // SLLI/SRLI/SRAI/ADDI/*I
             begin
                 CSRWriteD = 1'b0;
-                CSRRead = 1'b0;
+                CSRReadD = 1'b0;
                 RegWriteD = `LW;
                 BranchTypeD = `NOBRANCH;
                 ImmType = `ITYPE;
@@ -218,7 +218,7 @@ module ControlUnit(
             7'b0000011: //Load
             begin
                 CSRWriteD = 1'b0;
-                CSRRead = 1'b0;
+                CSRReadD = 1'b0;
                 BranchTypeD = `NOBRANCH;
                 ImmType = `ITYPE;
                 MemWriteD = 4'd0;
@@ -236,7 +236,7 @@ module ControlUnit(
             7'b0100011: //Store
             begin
                 CSRWriteD = 1'b0;
-                CSRRead = 1'b0;
+                CSRReadD = 1'b0;
                 RegWriteD = `NOREGWRITE;
                 BranchTypeD = `NOBRANCH;
                 ImmType = `STYPE;
@@ -254,7 +254,7 @@ module ControlUnit(
                 CSRReadD = 1'b1;
                 RegWriteD = `LW;
                 BranchTypeD = `NOBRANCH;
-                ImmType = `CTYPE;
+                ImmType = `ITYPE;           //Anything
                 MemWriteD <= 4'd0;
                 case (Fn3)
                     3'b001:     //CSRRW

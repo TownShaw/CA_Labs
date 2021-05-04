@@ -29,8 +29,8 @@
     `define SLTU  4'd9
     `define LUI  4'd10
     `define CSRW  4'd11     // used for CSRRW & CSRRWI
-    `define CSRS  4'b12     // used for CSRRS & CSRRSI
-    `define CSRC  4'b13     // used for CSRRC & CSRRCI
+    `define CSRS  4'd12     // used for CSRRS & CSRRSI
+    `define CSRC  4'd13     // used for CSRRC & CSRRCI
 //BranchType[2:0]
     `define NOBRANCH  3'd0
     `define BEQ  3'd1
