@@ -47,7 +47,10 @@ module ControlUnit(
     output reg [3:0] AluContrlD,
     output wire [1:0] AluSrc2D,
     output wire AluSrc1D,
-    output reg [2:0] ImmType
+    output reg [2:0] ImmType,
+    output reg CSRWriteD,
+    output reg CSRReadD,
+    output reg csrrwD
     );
 
     assign JalD = (Op == 7'b1101111) ? 1'b1 : 1'b0;
@@ -63,179 +66,259 @@ module ControlUnit(
         case (Op)
             7'b0010011: // SLLI/SRLI/SRAI/ADDI/*I
             begin
-                RegWriteD <= `LW;
-                BranchTypeD <= `NOBRANCH;
-                ImmType <= `ITYPE;
-                MemWriteD <= 3'd0;
-                RegReadD <= 2'b10;
+                CSRWriteD = 1'b0;
+                CSRRead = 1'b0;
+                RegWriteD = `LW;
+                BranchTypeD = `NOBRANCH;
+                ImmType = `ITYPE;
+                MemWriteD = 4'd0;
+                RegReadD = 2'b10;
                 case (Fn3)
-                    3'b000: AluContrlD <= `ADD;     //ADDI
-                    3'b001: AluContrlD <= `SLL;     //SLLI
-                    3'b010: AluContrlD <= `SLT;     //SLTI
-                    3'b011: AluContrlD <= `SLTU;    //SLTIU
-                    3'b100: AluContrlD <= `XOR;     //XORI
+                    3'b000: AluContrlD = `ADD;     //ADDI
+                    3'b001: AluContrlD = `SLL;     //SLLI
+                    3'b010: AluContrlD = `SLT;     //SLTI
+                    3'b011: AluContrlD = `SLTU;    //SLTIU
+                    3'b100: AluContrlD = `XOR;     //XORI
                     3'b101:
                     begin
                         if (Fn7 == 7'd0)
-                            AluContrlD <= `SRL;     //SRLI
+                            AluContrlD = `SRL;     //SRLI
                         else
-                            AluContrlD <= `SRA;     //SRAI
+                            AluContrlD = `SRA;     //SRAI
                     end
-                    3'b110: AluContrlD <= `OR;      //ORI
-                    3'b111: AluContrlD <= `AND;     //ANDI
-                    default: AluContrlD <= `ADD;    //Anything
+                    3'b110: AluContrlD = `OR;      //ORI
+                    3'b111: AluContrlD = `AND;     //ANDI
+                    default: AluContrlD = `ADD;    //Anything
                 endcase
                 /*
                 if (Fn3 == 3'b001)
-                    AluContrlD <= `SLL;
+                    AluContrlD = `SLL;
                 else if (Fn3 == 3'b101 && Fn7 == 7'd0)
-                    AluContrlD <= `SRL;
+                    AluContrlD = `SRL;
                 else if (Fn3 == 3'b101 && Fn7 == 7'b0100000)
-                    AluContrlD <= `SRA;
+                    AluContrlD = `SRA;
                 else
-                    AluContrlD <= `SLL;
+                    AluContrlD = `SLL;
                 */
             end
             7'b0110011:
             begin
-                RegWriteD <= `LW;
-                BranchTypeD <= `NOBRANCH;
-                ImmType <= `RTYPE;
-                MemWriteD <= 3'd0;
-                RegReadD <= 2'b11;
+                CSRWriteD = 1'b0;
+                CSRReadD = 1'b0;
+                RegWriteD = `LW;
+                BranchTypeD = `NOBRANCH;
+                ImmType = `RTYPE;
+                MemWriteD = 4'd0;
+                RegReadD = 2'b11;
                 case (Fn3)
                     3'b000:
                     begin
                         if (Fn7 == 7'd0)
-                            AluContrlD <= `ADD;     //ADD
+                            AluContrlD = `ADD;     //ADD
                         else
-                            AluContrlD <= `SUB;     //SUB
+                            AluContrlD = `SUB;     //SUB
                     end
-                    3'b001: AluContrlD <= `SLL;     //SLL
-                    3'b010: AluContrlD <= `SLT;     //SLT
-                    3'b011: AluContrlD <= `SLTU;    //SLTU
-                    3'b100: AluContrlD <= `XOR;     //XOR
+                    3'b001: AluContrlD = `SLL;     //SLL
+                    3'b010: AluContrlD = `SLT;     //SLT
+                    3'b011: AluContrlD = `SLTU;    //SLTU
+                    3'b100: AluContrlD = `XOR;     //XOR
                     3'b101:
                     begin
                         if (Fn7 == 7'd0)
-                            AluContrlD <= `SRL;     //SRL
+                            AluContrlD = `SRL;     //SRL
                         else
-                            AluContrlD <= `SRA;     //SRA
+                            AluContrlD = `SRA;     //SRA
                     end
-                    3'b110: AluContrlD <= `OR;      //OR
-                    3'b111: AluContrlD <= `AND;     //AND
-                    default: AluContrlD <= `ADD;    //Anything
+                    3'b110: AluContrlD = `OR;      //OR
+                    3'b111: AluContrlD = `AND;     //AND
+                    default: AluContrlD = `ADD;    //Anything
                 endcase
                 /*
                 if (Fn3 == 3'b000)
                 begin
                     if (Fn7 == 7'd0)
-                        AluContrlD <= `ADD; //ADD
+                        AluContrlD = `ADD; //ADD
                     else
-                        AluContrlD <= `SUB; //SUB
+                        AluContrlD = `SUB; //SUB
                 end
                 else if (Fn3 == 3'b001)
-                    AluContrlD <= `SLL;     //SLL
+                    AluContrlD = `SLL;     //SLL
                 else if (Fn3 == 3'b010)
-                    AluContrlD <= `SLT;     //SLT
+                    AluContrlD = `SLT;     //SLT
                 else if (Fn3 == 3'b011)
-                    AluContrlD <= `SLTU;    //SLTU
+                    AluContrlD = `SLTU;    //SLTU
                 else if (Fn3 == 3'b100)
-                    AluContrlD <= `XOR;     //XOR
+                    AluContrlD = `XOR;     //XOR
                 else if (Fn3 == )
                 */
             end
             7'b0110111: //LUI
             begin
-                RegWriteD <= `LW;
-                BranchTypeD <= `NOBRANCH;
-                ImmType <= `UTYPE;
-                MemWriteD <= 3'd0;
-                AluContrlD <= `LUI;
-                RegReadD <= 2'b00;
+                CSRWriteD = 1'b0;
+                CSRReadD = 1'b0;
+                RegWriteD = `LW;
+                BranchTypeD = `NOBRANCH;
+                ImmType = `UTYPE;
+                MemWriteD = 4'd0;
+                AluContrlD = `LUI;
+                RegReadD = 2'b00;
             end
             7'b0010111: //AUIPC
             begin
-                RegWriteD <= `LW;
-                BranchTypeD <= `NOBRANCH;
-                ImmType <= `UTYPE;
-                MemWriteD <= 3'd0;
-                AluContrlD <= `ADD;
-                RegReadD <= 2'b00;
+                CSRWriteD = 1'b0;
+                CSRReadD = 1'b0;
+                RegWriteD = `LW;
+                BranchTypeD = `NOBRANCH;
+                ImmType = `UTYPE;
+                MemWriteD = 4'd0;
+                AluContrlD = `ADD;
+                RegReadD = 2'b00;
             end
             7'b1100111: //JALR
             begin
-                RegWriteD <= `LW;
-                BranchTypeD <= `NOBRANCH;
-                ImmType <= `ITYPE;
-                MemWriteD <= 3'd0;
-                AluContrlD <= `ADD;
-                RegReadD <= 2'b10;
+                CSRWriteD = 1'b0;
+                CSRReadD = 1'b0;
+                RegWriteD = `LW;
+                BranchTypeD = `NOBRANCH;
+                ImmType = `ITYPE;
+                MemWriteD = 4'd0;
+                AluContrlD = `ADD;
+                RegReadD = 2'b10;
             end
             7'b1101111: //JAL
             begin
-                RegWriteD <= `LW;
-                BranchTypeD <= `NOBRANCH;
-                ImmType <= `JTYPE;
-                MemWriteD <= 3'd0;
-                AluContrlD <= `ADD;
-                RegReadD <= 2'b00;
+                CSRWriteD = 1'b0;
+                CSRReadD = 1'b0;
+                RegWriteD = `LW;
+                BranchTypeD = `NOBRANCH;
+                ImmType = `JTYPE;
+                MemWriteD = 4'd0;
+                AluContrlD = `ADD;
+                RegReadD = 2'b00;
             end
             7'b1100011: //Branch
             begin
-                RegWriteD <= `NOREGWRITE;
-                ImmType <= `BTYPE;
-                MemWriteD <= 3'd0;
-                AluContrlD <= `SUB;                     //Anything
-                RegReadD <= 2'b11;
+                CSRWriteD = 1'b0;
+                CSRReadD = 1'b0;
+                RegWriteD = `NOREGWRITE;
+                ImmType = `BTYPE;
+                MemWriteD = 4'd0;
+                AluContrlD = `SUB;                     //Anything
+                RegReadD = 2'b11;
                 case (Fn3)
-                    3'b000: BranchTypeD <= `BEQ;        //BEQ
-                    3'b001: BranchTypeD <= `BNE;        //BNE
-                    3'b100: BranchTypeD <= `BLT;        //BLT
-                    3'b101: BranchTypeD <= `BGE;        //BGE
-                    3'b110: BranchTypeD <= `BLTU;       //BLTU
-                    3'b111: BranchTypeD <= `BGEU;       //BGEU
-                    default: BranchTypeD <= `NOBRANCH;  //Anything
+                    3'b000: BranchTypeD = `BEQ;        //BEQ
+                    3'b001: BranchTypeD = `BNE;        //BNE
+                    3'b100: BranchTypeD = `BLT;        //BLT
+                    3'b101: BranchTypeD = `BGE;        //BGE
+                    3'b110: BranchTypeD = `BLTU;       //BLTU
+                    3'b111: BranchTypeD = `BGEU;       //BGEU
+                    default: BranchTypeD = `NOBRANCH;  //Anything
                 endcase
             end
             7'b0000011: //Load
             begin
-                BranchTypeD <= `NOBRANCH;
-                ImmType <= `ITYPE;
-                MemWriteD <= 3'd0;
-                AluContrlD <= `ADD;
-                RegReadD <= 2'b10;
+                CSRWriteD = 1'b0;
+                CSRRead = 1'b0;
+                BranchTypeD = `NOBRANCH;
+                ImmType = `ITYPE;
+                MemWriteD = 4'd0;
+                AluContrlD = `ADD;
+                RegReadD = 2'b10;
                 case (Fn3)
-                    3'b000: RegWriteD <= `LB;
-                    3'b001: RegWriteD <= `LH;
-                    3'b010: RegWriteD <= `LW;
-                    3'b100: RegWriteD <= `LBU;
-                    3'b101: RegWriteD <= `LHU;
-                    default: RegWriteD <= `NOREGWRITE;
+                    3'b000: RegWriteD = `LB;
+                    3'b001: RegWriteD = `LH;
+                    3'b010: RegWriteD = `LW;
+                    3'b100: RegWriteD = `LBU;
+                    3'b101: RegWriteD = `LHU;
+                    default: RegWriteD = `NOREGWRITE;
                 endcase
             end
             7'b0100011: //Store
             begin
-                RegWriteD <= `NOREGWRITE;
-                BranchTypeD <= `NOBRANCH;
-                ImmType <= `STYPE;
-                AluContrlD <= `ADD;
-                RegReadD <= 2'b11;
+                CSRWriteD = 1'b0;
+                CSRRead = 1'b0;
+                RegWriteD = `NOREGWRITE;
+                BranchTypeD = `NOBRANCH;
+                ImmType = `STYPE;
+                AluContrlD = `ADD;
+                RegReadD = 2'b11;
                 case (Fn3)
-                    3'b000: MemWriteD <= 4'b0001;   //SB
-                    3'b001: MemWriteD <= 4'b0011;   //SH
-                    3'b010: MemWriteD <= 4'b1111;   //SW
-                    default: MemWriteD <= 4'b0000;  //Anything
+                    3'b000: MemWriteD = 4'b0001;   //SB
+                    3'b001: MemWriteD = 4'b0011;   //SH
+                    3'b010: MemWriteD = 4'b1111;   //SW
+                    default: MemWriteD = 4'b0000;  //Anything
+                endcase
+            end
+            7'b1110011: //CSR Inst, 且只有 CSRRW | CSRRWI 需要写 CSR, 但都需要将 CSR 写入通用寄存器中
+            begin
+                CSRReadD = 1'b1;
+                RegWriteD = `LW;
+                BranchTypeD = `NOBRANCH;
+                ImmType = `CTYPE;
+                MemWriteD <= 4'd0;
+                case (Fn3)
+                    3'b001:     //CSRRW
+                    begin
+                        AluContrlD = `CSRW;
+                        RegReadD = 2'b10;
+                        csrrwD = 1'b1;
+                        CSRWriteD = 1'b1;
+                    end
+                    3'b010:     //CSRRS
+                    begin
+                        AluContrlD = `CSRS;
+                        RegReadD = 2'b10;
+                        csrrwD = 1'b0;
+                        CSRWriteD = 1'b0;
+                    end
+                    3'b011:     //CSRRC
+                    begin
+                        AluContrlD = `CSRC;
+                        RegReadD = 2'b10;
+                        csrrwD = 1'b0;
+                        CSRWriteD = 1'b0;
+                    end
+                    3'b101:     //CSRRWI
+                    begin
+                        AluContrlD = `CSRW;
+                        RegReadD = 2'b00;
+                        csrrwD = 1'b1;
+                        CSRWriteD = 1'b1;
+                    end
+                    3'b110:     //CSRRSI
+                    begin
+                        AluContrlD = `CSRS;
+                        RegReadD = 2'b00;
+                        csrrwD = 1'b0;
+                        CSRWriteD = 1'b0;
+                    end
+                    3'b111:     //CSRRCI
+                    begin
+                        AluContrlD = `CSRC;
+                        RegReadD = 2'b00;
+                        csrrwD = 1'b0;
+                        CSRWriteD = 1'b0;
+                    end
+                    default:    //Anything
+                    begin
+                        AluContrlD = `CSRW;
+                        RegReadD = 2'b00;
+                        csrrwD = 1'b0;
+                        CSRWriteD = 1'b0;
+                    end
                 endcase
             end
             default:    //Anything
             begin
-                RegWriteD <= `NOREGWRITE;
-                MemWriteD <= 3'd0;
-                BranchTypeD <= `NOBRANCH;
-                ImmType <= `RTYPE;
-                AluContrlD <= `ADD;
-                RegReadD <= 2'b00;
+                RegWriteD = `NOREGWRITE;
+                MemWriteD = 3'd0;
+                BranchTypeD = `NOBRANCH;
+                ImmType = `RTYPE;
+                AluContrlD = `ADD;
+                RegReadD = 2'b00;
+                CSRWriteD = 1'b0;
+                CSRReadD = 1'b0;
+                csrrwD = 1'b0;
             end
         endcase
     end

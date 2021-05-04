@@ -61,7 +61,13 @@ module WBSegReg(
     input wire [2:0] RegWriteM,
     output reg [2:0] RegWriteW,
     input wire MemToRegM,
-    output reg MemToRegW
+    output reg MemToRegW,
+    input wire [31:0] CSRM,
+    output reg [31:0] CSRW,
+    input wire CSRWriteM,
+    output reg CSRWriteW,
+    input wire CSRReadM,
+    output reg CSRReadW
     );
     
     //
@@ -71,6 +77,9 @@ module WBSegReg(
         MemToRegW         =  1'b0;
         ResultW           =     0;
         RdW               =  5'b0;
+        CSRW              = 32'd0;
+        CSRWriteW         =  1'b0;
+        CSRReadW          =  1'b0;
     end
     //
     always@(posedge clk)
@@ -80,6 +89,9 @@ module WBSegReg(
             MemToRegW         <= clear ?  1'b0 : MemToRegM;
             ResultW           <= clear ?     0 : ResultM;
             RdW               <= clear ?  5'b0 : RdM;
+            CSRW              <= clear ? 32'd0 : CSRM;
+            CSRWriteW         <= clear ?  1'b0 : CSRWriteM;
+            CSRReadW          <= clear ?  1'b0 : CSRReadM;
         end
 
     wire [31:0] RD_raw;
