@@ -1,0 +1,44 @@
+
+csrtest.om:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+00010054 <test_0>:
+   10054:	00000193          	li	gp,0
+   10058:	00f00093          	li	ra,15
+   1005c:	00009073          	csrrw	x0,csr_zero,ra  #CSRs[0] = ra = 15 	
+   10060:	00003173          	csrrc	sp,csr_zero,zero #t = CSRs[0] = 15; CSRs[0] = 15;sp = 15;
+   10064:	06111063          	bne	sp,ra,100c4 <failed># 15 = 15 no branch
+   10068:	000c7073          	csrrci 	x0, csr_zero, 24#t = CSRs[0] = 15; CSRs[0] = 7;  
+   1006c:	00003173          	csrrc	sp,csr_zero,zero;#t = CSRs[0] = 7; CSRs[0] = 7;
+   10070:	00700093          	li	ra,7
+   10074:	04111863          	bne	sp,ra,100c4 <failed>#7 = 7 no branch
+
+00010078 <test_2>:
+   10078:	00200193          	li	gp,2
+   1007c:	00100093          	li	ra,1
+   10080:	00209073          	csrrw 	zero, csr_two, ra#CSRs[2] = 1;
+   10084:	002c6173          	csrrsi	sp,csr_two,24#t = 1;CSRs[2] = 25;sp = 1;
+   10088:	02111e63          	bne	sp,ra,100c4 <failed>#1 = 1 no branch
+   1008c:	00201173           	csrrw 	sp,csr_two,x0#t = CSRs[2] = 25;CSRs[2] = 0;sp = 25;
+   10090:	01900093          	li	ra,25
+   10094:	02111863          	bne	sp,ra,100c4 <failed>#25 = 25 no branch
+
+00010098 <test_3>:
+   10098:	00300193          	li	gp,3
+   1009c:	003c5073          	csrrwi 	x0, csr_three, 24#CSRs[3] = 24;
+   100a0:	00700093          	li	ra,7
+   100a4:	0030a173          	csrrs	sp,csr_three,ra#t = CSRs[3] = 24; CSRs[3] = 31;sp = 24 	
+    100a8:	01800093          	li	ra,24
+   100ac:	00111c63          	bne	sp,ra,100c4 <failed>#24 = 24 no branch
+   100b0:	00307173      	csrrci 	sp,csr_threee,32#t = CSRs[3] = 31;CSRs[3] = 31; sp =31;
+   100b4:	01f00093          	li	ra,31
+   100b8:	00111663          	bne	sp,ra,100c4 <failed>#31 = 31 no branch
+
+000100bc <success>:
+   100bc:	00100193          	li	gp,1
+   100c0:	ffdff06f          	j	100bc <success>
+
+000100c4 <failed>:
+   100c4:	0000006f          	j	100c4 <failed>
