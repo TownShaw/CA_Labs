@@ -35,9 +35,10 @@ module HarzardUnit(
     input wire MemToRegE,
     input wire [2:0] RegWriteM, RegWriteW,
     input wire CSRReadE, CSRWriteM, CSRWriteW,
+    input wire [11:0] Rs_CSRE, Rd_CSRM, Rd_CSRW,
     output reg StallF, FlushF, StallD, FlushD, StallE, FlushE, StallM, FlushM, StallW, FlushW,
     output reg [1:0] Forward1E, Forward2E,
-    output reg ForwardCSRE
+    output reg [1:0] ForwardCSRE
     );
     always @(*)
     begin
@@ -55,6 +56,7 @@ module HarzardUnit(
             FlushW = 1'b1;
             Forward1E = 2'b00;
             Forward2E = 2'b00;
+            ForwardCSRE = 2'b00;
         end
         else
         begin
@@ -121,6 +123,13 @@ module HarzardUnit(
                 FlushE = 1'b1;
             else
                 FlushE = 1'b0;
+            
+            if (CSRReadE == 1'b1 && CSRWriteM == 1'b1 && Rs_CSRE == Rd_CSRM)
+                ForwardCSRE = 2'b10;
+            else if (CSRReadE == 1'b1 && CSRWriteW == 1'b1 && Rs_CSRE == Rd_CSRW)
+                ForwardCSRE = 2'b01;
+            else
+                ForwardCSRE = 2'b00;
 
             StallM = 1'b0;
             StallW = 1'b0;

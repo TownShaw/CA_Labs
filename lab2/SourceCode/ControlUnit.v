@@ -73,6 +73,7 @@ module ControlUnit(
                 ImmType = `ITYPE;
                 MemWriteD = 4'd0;
                 RegReadD = 2'b10;
+                csrrwD = 1'b0;
                 case (Fn3)
                     3'b000: AluContrlD = `ADD;     //ADDI
                     3'b001: AluContrlD = `SLL;     //SLLI
@@ -110,6 +111,7 @@ module ControlUnit(
                 ImmType = `RTYPE;
                 MemWriteD = 4'd0;
                 RegReadD = 2'b11;
+                csrrwD = 1'b0;
                 case (Fn3)
                     3'b000:
                     begin
@@ -162,6 +164,7 @@ module ControlUnit(
                 MemWriteD = 4'd0;
                 AluContrlD = `LUI;
                 RegReadD = 2'b00;
+                csrrwD = 1'b0;
             end
             7'b0010111: //AUIPC
             begin
@@ -173,6 +176,7 @@ module ControlUnit(
                 MemWriteD = 4'd0;
                 AluContrlD = `ADD;
                 RegReadD = 2'b00;
+                csrrwD = 1'b0;
             end
             7'b1100111: //JALR
             begin
@@ -184,6 +188,7 @@ module ControlUnit(
                 MemWriteD = 4'd0;
                 AluContrlD = `ADD;
                 RegReadD = 2'b10;
+                csrrwD = 1'b0;
             end
             7'b1101111: //JAL
             begin
@@ -195,6 +200,7 @@ module ControlUnit(
                 MemWriteD = 4'd0;
                 AluContrlD = `ADD;
                 RegReadD = 2'b00;
+                csrrwD = 1'b0;
             end
             7'b1100011: //Branch
             begin
@@ -205,6 +211,7 @@ module ControlUnit(
                 MemWriteD = 4'd0;
                 AluContrlD = `SUB;                     //Anything
                 RegReadD = 2'b11;
+                csrrwD = 1'b0;
                 case (Fn3)
                     3'b000: BranchTypeD = `BEQ;        //BEQ
                     3'b001: BranchTypeD = `BNE;        //BNE
@@ -224,6 +231,7 @@ module ControlUnit(
                 MemWriteD = 4'd0;
                 AluContrlD = `ADD;
                 RegReadD = 2'b10;
+                csrrwD = 1'b0;
                 case (Fn3)
                     3'b000: RegWriteD = `LB;
                     3'b001: RegWriteD = `LH;
@@ -242,6 +250,7 @@ module ControlUnit(
                 ImmType = `STYPE;
                 AluContrlD = `ADD;
                 RegReadD = 2'b11;
+                csrrwD = 1'b0;
                 case (Fn3)
                     3'b000: MemWriteD = 4'b0001;   //SB
                     3'b001: MemWriteD = 4'b0011;   //SH
@@ -252,6 +261,7 @@ module ControlUnit(
             7'b1110011: //CSR Inst, 且只有 CSRRW | CSRRWI 需要写 CSR, 但都需要将 CSR 写入通用寄存器中
             begin
                 CSRReadD = 1'b1;
+                CSRWriteD = 1'b1;
                 RegWriteD = `LW;
                 BranchTypeD = `NOBRANCH;
                 ImmType = `ITYPE;           //Anything
@@ -262,49 +272,42 @@ module ControlUnit(
                         AluContrlD = `CSRW;
                         RegReadD = 2'b10;
                         csrrwD = 1'b1;
-                        CSRWriteD = 1'b1;
                     end
                     3'b010:     //CSRRS
                     begin
                         AluContrlD = `CSRS;
                         RegReadD = 2'b10;
                         csrrwD = 1'b0;
-                        CSRWriteD = 1'b0;
                     end
                     3'b011:     //CSRRC
                     begin
                         AluContrlD = `CSRC;
                         RegReadD = 2'b10;
                         csrrwD = 1'b0;
-                        CSRWriteD = 1'b0;
                     end
                     3'b101:     //CSRRWI
                     begin
                         AluContrlD = `CSRW;
                         RegReadD = 2'b00;
                         csrrwD = 1'b1;
-                        CSRWriteD = 1'b1;
                     end
                     3'b110:     //CSRRSI
                     begin
                         AluContrlD = `CSRS;
                         RegReadD = 2'b00;
                         csrrwD = 1'b0;
-                        CSRWriteD = 1'b0;
                     end
                     3'b111:     //CSRRCI
                     begin
                         AluContrlD = `CSRC;
                         RegReadD = 2'b00;
                         csrrwD = 1'b0;
-                        CSRWriteD = 1'b0;
                     end
                     default:    //Anything
                     begin
                         AluContrlD = `CSRW;
                         RegReadD = 2'b00;
                         csrrwD = 1'b0;
-                        CSRWriteD = 1'b0;
                     end
                 endcase
             end

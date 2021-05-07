@@ -24,6 +24,8 @@ module RegisterFile(
     input wire [4:0] A1,
     input wire [4:0] A2,
     input wire [4:0] A3,
+    input wire [11:0] A_CSR_1,      // 读选择
+    input wire [11:0] A_CSR_2,      // 写选择
     input wire [31:0] WD3,
     input wire [31:0] WD_CSR,
     output wire [31:0] RD1,
@@ -32,7 +34,7 @@ module RegisterFile(
     );
 
     reg [31:0] RegFile[31:1];
-    reg [31:0] CSR;
+    reg [31:0] CSR [0:4095];
     integer i;
     //
     always@(negedge clk or posedge rst) 
@@ -40,17 +42,17 @@ module RegisterFile(
         if(rst)
         begin
             for(i=1;i<32;i=i+1) RegFile[i][31:0]<=32'b0;
-            CSR <= 32'd0;
+            for (i = 0; i < 4096; i = i + 1) CSR[i] <= 32'd0;
         end
         else if( (WE3==1'b1) && (A3!=5'b0) )    RegFile[A3]<=WD3;   
         if( CSR_WE == 1'b1 )
-            CSR <= WD_CSR;
+            CSR[A_CSR_2] <= WD_CSR;
     end
     //    
 //    assign RD1= (A3 == A1 && WE3 == 1'b1) ? WD3 : ((A1==5'b0)?32'b0:RegFile[A1]);  //Forwarding
 //    assign RD2= (A3 == A2 && WE3 == 1'b1) ? WD3 : ((A2==5'b0)?32'b0:RegFile[A2]);
     assign RD1= (A1==5'b0) ? 32'b0 : ((A3 == A1 && WE3 == 1'b1) ? WD3 : RegFile[A1]);  //Forwarding
     assign RD2= (A2==5'b0) ? 32'b0 : ((A3 == A2 && WE3 == 1'b1) ? WD3 : RegFile[A2]);
-    assign RD_CSR = (CSR_WE == 1'b1) ? WD_CSR : CSR;
+    assign RD_CSR = (A_CSR_1 == A_CSR_2 && CSR_WE == 1'b1) ? WD_CSR : CSR[A_CSR_1];
     
 endmodule

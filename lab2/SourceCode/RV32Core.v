@@ -86,23 +86,30 @@ module RV32Core(
     wire MemToRegW;
     wire [1:0] Forward1E;
     wire [1:0] Forward2E;
+    wire [1:0] ForwardCSRE;
     wire [1:0] LoadedBytesSelect;
+    wire [11:0] Rs_CSRD, Rs_CSRE, Rd_CSRD, Rd_CSRE, Rd_CSRM, Rd_CSRW;
     wire CSRRead, csrrwD, csrrwE;
     wire CSRWriteD, CSRWriteE, CSRWriteM, CSRWriteW;
     wire CSRReadD, CSRReadE, CSRReadM, CSRReadW;
-    wire [31:0] CSRD, CSRE, CSRM, CSRW, CSR_Result, RegWriteData_plus_CSR;
+    wire [31:0] CSRD, CSRE, CSRM, CSRW, ForwardCSRData, RegWriteData_plus_CSR;
+    wire [31:0] CSRM_or_DataM, CSRW_or_DataW;
     //wire values assignments
     assign {Funct7D, Rs2D, Rs1D, Funct3D, RdD, OpCodeD} = Instr;
+    assign Rs_CSRD = Instr[31:20];
+    assign Rd_CSRD = Instr[31:20];
     assign JalNPC=ImmD+PCD;
-    assign ForwardData1 = Forward1E[1]?(AluOutM):( Forward1E[0]?RegWriteData:RegOut1E );
+    assign CSRM_or_DataM = CSRWriteM ? CSRM : AluOutM;
+    assign CSRW_or_DataW = CSRWriteW ? CSRW : RegWriteData;
+    assign ForwardData1 = Forward1E[1]?(CSRM_or_DataM):( Forward1E[0]?CSRW_or_DataW:RegOut1E );
 //    assign ForwardData1 = Forward1E[1]?((RdM == 5'd0) ? 32'd0 : AluOutM):( Forward1E[0]?((RdW == 5'd0) ? 32'd0 : RegWriteData):RegOut1E );
     assign Operand1 = (RegReadE[1] == 1'b0 && CSRReadE == 1'b1) ? Rs1E : (AluSrc1E ? PCE : ForwardData1);
-    assign ForwardData2 = Forward2E[1]?(AluOutM):( Forward2E[0]?RegWriteData:RegOut2E );
-    assign Operand2 = CSRReadE ? CSRE : (AluSrc2E[1] ? (ImmE) : ( AluSrc2E[0] ? Rs2E : ForwardData2 ));
+    assign ForwardData2 = Forward2E[1]?(CSRM_or_DataM):( Forward2E[0]?CSRW_or_DataW:RegOut2E );
+    assign Operand2 = ForwardCSRE[1] ? AluOutM : ( ForwardCSRE[0] ? ResultW : (CSRReadE ? CSRE : (AluSrc2E[1] ? (ImmE) : ( AluSrc2E[0] ? Rs2E : ForwardData2 ))));
     assign ResultM = LoadNpcM ? (PCM+4) : AluOutM;
     assign RegWriteData = (~MemToRegW ? ResultW : DM_RD_Ext);     //MemToReg = 0 <--> ResultW, MemToReg = 1 <--> DM_RD_Ext
-    assign RegWriteData_plus_CSR = CSRReadW ? CSRW : RegWriteData;
-    assign CSR_Result = csrrwE ? CSRE : AluOutE;            // 若是 CSRRW | CSRRWI 指令则直接传 CSRE 到之后的段, 否则传对 CSR 的运算结果
+    assign RegWriteData_plus_CSR = CSRWriteW ? CSRW : RegWriteData;
+    assign ForwardCSRData = ForwardCSRE[1] ? AluOutM : (ForwardCSRE[0] ? ResultW : CSRE);
 
     //Module connections
     // ---------------------------------------------
@@ -178,12 +185,14 @@ module RV32Core(
         .A1(Rs1D),
         .A2(Rs2D),
         .A3(RdW),
-        .WD3(RegWriteData),
+        .WD3(RegWriteData_plus_CSR),
         .RD1(RegOut1D),
         .RD2(RegOut2D),
         .CSR_WE(CSRWriteW),
         .WD_CSR(ResultW),
-        .RD_CSR(CSRD)
+        .RD_CSR(CSRD),
+        .A_CSR_1(Rs_CSRD),
+        .A_CSR_2(Rd_CSRW)
     );
 
     // ---------------------------------------------
@@ -236,7 +245,11 @@ module RV32Core(
         .CSRReadD(CSRReadD),
         .CSRReadE(CSRReadE),
         .csrrwD(csrrwD),
-        .csrrwE(csrrwE)
+        .csrrwE(csrrwE),
+        .Rd_CSRD(Rd_CSRD),
+        .Rd_CSRE(Rd_CSRE),
+        .Rs_CSRD(Rs_CSRD),
+        .Rs_CSRE(Rs_CSRE)
     	); 
 
     ALU ALU1(
@@ -276,12 +289,14 @@ module RV32Core(
         .MemWriteM(MemWriteM),
         .LoadNpcE(LoadNpcE),
         .LoadNpcM(LoadNpcM),
-        .CSRE(CSR_Result),
+        .CSRE(ForwardCSRData),
         .CSRM(CSRM),
         .CSRWriteE(CSRWriteE),
         .CSRWriteM(CSRWriteM),
         .CSRReadE(CSRReadE),
-        .CSRReadM(CSRReadM)
+        .CSRReadM(CSRReadM),
+        .Rd_CSRE(Rd_CSRE),
+        .Rd_CSRM(Rd_CSRM)
     );
 
     // ---------------------------------------------
@@ -313,7 +328,9 @@ module RV32Core(
         .CSRWriteM(CSRWriteM),
         .CSRWriteW(CSRWriteW),
         .CSRReadM(CSRReadM),
-        .CSRReadW(CSRReadW)
+        .CSRReadW(CSRReadW),
+        .Rd_CSRM(Rd_CSRM),
+        .Rd_CSRW(Rd_CSRW)
     );
     
     DataExt DataExt1(
@@ -354,7 +371,14 @@ module RV32Core(
         .StallW(StallW),
         .FlushW(FlushW),
         .Forward1E(Forward1E),
-        .Forward2E(Forward2E)
+        .Forward2E(Forward2E),
+        .CSRReadE(CSRReadE),
+        .CSRWriteM(CSRWriteM),
+        .CSRWriteW(CSRWriteW),
+        .Rs_CSRE(Rs_CSRE),
+        .Rd_CSRM(Rd_CSRM),
+        .Rd_CSRW(Rd_CSRW),
+        .ForwardCSRE(ForwardCSRE)
     	);    
     	         
 endmodule

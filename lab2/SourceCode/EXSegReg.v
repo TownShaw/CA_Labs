@@ -63,7 +63,11 @@ module EXSegReg(
     input wire CSRReadD,
     output reg CSRReadE,
     input wire csrrwD,
-    output reg csrrwE
+    output reg csrrwE,
+    input wire [11:0] Rd_CSRD,
+    output reg [11:0] Rd_CSRE,
+    input wire [11:0] Rs_CSRD,
+    output reg [11:0] Rs_CSRE
     );
     initial begin
         PCE        = 32'b0;
@@ -88,6 +92,8 @@ module EXSegReg(
         CSRWriteE = 1'b0;
         CSRReadE = 1'b0;
         csrrwE = 1'b0;
+        Rd_CSRE = 12'd0;
+        Rs_CSRE = 12'd0;
     end
     //
     always@(posedge clk) begin
@@ -116,6 +122,8 @@ module EXSegReg(
                 CSRWriteE <= 1'b0;
                 CSRReadE <= 1'b0;
                 csrrwE <= 1'b0;
+                Rd_CSRE <= 12'd0;
+                Rs_CSRE <= 12'd0;
             end else begin
                 PCE<=PCD;
                 BrNPC<=JalNPC;
@@ -135,10 +143,12 @@ module EXSegReg(
                 AluContrlE<=AluContrlD;
                 AluSrc1E<=AluSrc1D;
                 AluSrc2E<=AluSrc2D;
-                CSRE <= CSRE;
+                CSRE <= CSRD;
                 CSRWriteE <= CSRWriteD;
                 CSRReadE <= CSRReadD;
                 csrrwE <= csrrwD;
+                Rd_CSRE <= Rd_CSRD;
+                Rs_CSRE <= Rs_CSRD;
             end
         end
 endmodule
