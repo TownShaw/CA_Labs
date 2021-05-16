@@ -54,7 +54,7 @@ assign {unused_addr, tag_addr, set_addr, line_addr, word_addr} = addr;  // 拆�
 reg cache_hit = 1'b0;
 always @ (*) begin              // 判断 输入的address 是否在 cache 中命中
     for (integer i = 0; i < WAY_SIZE; i++) begin
-        if (valid[set_addr][i] == 1'b1 && cache_tags[set_addr][i] == set_addr) begin
+        if (valid[set_addr][i] == 1'b1 && cache_tags[set_addr][i] == tag_addr) begin
             cache_hit = 1'b1;
             hit_way = i;
             break;
