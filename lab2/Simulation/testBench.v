@@ -13,8 +13,8 @@
 // !!! ALL YOU NEED TO CHANGE IS 4 FILE PATH BELOW !!!	
 //				(they are all optional, you can run cpu without change paths here,if files are failed to open, we will not dump the content to .txt and will not try to initial your bram)
 //////////////////////////////////////////////////////////////////////////////////
-`define DataRamContentLoadPath "E:\\Codes\\Git_Repos\\CA_Labs\\lab2\\Simulation\\3testAll.data"           //修改此处为测试数据路�?
-`define InstRamContentLoadPath "E:\\Codes\\Git_Repos\\CA_Labs\\lab2\\Simulation\\3testAll.inst"           //修改此处为测试数据路�?
+`define DataRamContentLoadPath "E:\\Codes\\Git_Repos\\CA_Labs\\lab2\\Simulation\\4testAll.data"           //修改此处为测试数据路�?
+`define InstRamContentLoadPath "E:\\Codes\\Git_Repos\\CA_Labs\\lab2\\Simulation\\4testAll.inst"           //修改此处为测试数据路�?
 `define DataRamContentSavePath "E:\\Codes\\Git_Repos\\CA_Labs\\lab2\\Simulation\\DataRamContent_1.txt"      //修改此处为测试数据路�?
 `define InstRamContentSavePath "E:\\Codes\\Git_Repos\\CA_Labs\\lab2\\Simulation\\InstRamContent_1.txt"      //修改此处为测试数据路�?
 `define BRAMWORDS 4096  //a word is 32bit, so our bram is 4096*32bit

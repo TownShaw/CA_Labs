@@ -1622,23 +1622,23 @@ Disassembly of section .text:
    11588:	5700106f          	j	12af8 <fail>
 
 0001158c <test_371>:
-   1158c:	00002097          	auipc	ra,0x2
+   1158c:	00002097          	auipc	ra,0x2	#x1
    11590:	5c808093          	addi	ra,ra,1480 # 13b54 <sb_tdat>
-   11594:	faa00113          	li	sp,-86
-   11598:	00208023          	sb	sp,0(ra)
-   1159c:	00008f03          	lb	t5,0(ra)
-   115a0:	faa00e93          	li	t4,-86
+   11594:	faa00113          	li	sp,-86	#x2
+   11598:	00208023          	sb	sp,0(ra)	#x2
+   1159c:	00008f03          	lb	t5,0(ra)	#x30
+   115a0:	faa00e93          	li	t4,-86	#x29
    115a4:	17300193          	li	gp,371
    115a8:	01df0463          	beq	t5,t4,115b0 <test_372>
    115ac:	54c0106f          	j	12af8 <fail>
 
 000115b0 <test_372>:
-   115b0:	00002097          	auipc	ra,0x2
+   115b0:	00002097          	auipc	ra,0x2	#x1
    115b4:	5a408093          	addi	ra,ra,1444 # 13b54 <sb_tdat>
-   115b8:	00000113          	li	sp,0
-   115bc:	002080a3          	sb	sp,1(ra)
-   115c0:	00108f03          	lb	t5,1(ra)
-   115c4:	00000e93          	li	t4,0
+   115b8:	00000113          	li	sp,0	#x2
+   115bc:	002080a3          	sb	sp,1(ra)	#x2
+   115c0:	00108f03          	lb	t5,1(ra)	#x30
+   115c4:	00000e93          	li	t4,0	#x29
    115c8:	17400193          	li	gp,372
    115cc:	01df0463          	beq	t5,t4,115d4 <test_373>
    115d0:	5280106f          	j	12af8 <fail>
@@ -2407,8 +2407,8 @@ Disassembly of section .text:
    11fec:	212120b7          	lui	ra,0x21212
    11ff0:	12108093          	addi	ra,ra,289 # 21212121 <__global_pointer$+0x211fdcd9>
    11ff4:	fc000113          	li	sp,-64
-   11ff8:	00209f33          	sll	t5,ra,sp
-   11ffc:	21212eb7          	lui	t4,0x21212
+   11ff8:	00209f33          	sll	t5,ra,sp		#x30
+   11ffc:	21212eb7          	lui	t4,0x21212	#x29
    12000:	121e8e93          	addi	t4,t4,289 # 21212121 <__global_pointer$+0x211fdcd9>
    12004:	1ae00193          	li	gp,430
    12008:	2fdf18e3          	bne	t5,t4,12af8 <fail>

@@ -21,7 +21,7 @@ Disassembly of section .text:
    10088:	005246b3          	xor	a3,tp,t0
    1008c:	00532733          	slt	a4,t1,t0
    10090:	005337b3          	sltu	a5,t1,t0
-   10094:	00409093          	slli	ra,ra,0x4
+   10094:	fff09093          	slli	ra,ra,0x4	#-1
    10098:	00435813          	srli	a6,t1,0x4
    1009c:	40435893          	srai	a7,t1,0x4
    100a0:	00311113          	slli	sp,sp,0x3

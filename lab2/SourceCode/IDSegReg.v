@@ -75,7 +75,7 @@ module IDSegReg(
     begin
         stall_ff<=~en;
         clear_ff<=clear;
-        RD_old<=RD_raw;
+        RD_old<=RD;
     end    
     assign RD = stall_ff ? RD_old : (clear_ff ? 32'b0 : RD_raw );
 

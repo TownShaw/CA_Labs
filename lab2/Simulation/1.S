@@ -14,7 +14,7 @@ sub x12, x3, x2
 xor x13, x4, x5
 slt x14, x6, x5
 sltu x15, x6, x5
-slli x1, x1, 4
+slli x1, x1, -1
 srli x16, x6, 4
 srai x17, x6, 4
 sll x2, x2, 3
