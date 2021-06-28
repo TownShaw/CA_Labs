@@ -20,13 +20,12 @@ localparam UNUSED_ADDR_LEN = 32 - TAG_ADDR_LEN - SET_ADDR_LEN - LINE_ADDR_LEN - 
 
 localparam LINE_SIZE       = 1 << LINE_ADDR_LEN  ;         // 计算 line 中 word 的数量，即 2^LINE_ADDR_LEN 个word 每 line
 localparam SET_SIZE        = 1 << SET_ADDR_LEN   ;         // 计算一共有多少组，即 2^SET_ADDR_LEN 个组
-localparam WAY_SIZE        = 1 << WAY_CNT        ;         // 计算一组中有多少 line, 即 2^WAY_CNT 个 line
 
 reg [            31:0] cache_mem    [SET_SIZE][WAY_CNT][LINE_SIZE]; // SET_SIZE个line，每个line有LINE_SIZE个word
 reg [TAG_ADDR_LEN-1:0] cache_tags   [SET_SIZE][WAY_CNT];            // SET_SIZE个TAG
 reg                    valid        [SET_SIZE][WAY_CNT];            // SET_SIZE个valid(有效位)
 reg                    dirty        [SET_SIZE][WAY_CNT];            // SET_SIZE个dirty(脏位)
-reg [     WAY_CNT-1:0] fifo         [SET_SIZE][WAY_CNT];            // 记录 FIFO 信息
+reg [            31:0] fifo         [SET_SIZE][WAY_CNT];            // 记录 FIFO 信息
 
 wire [              2-1:0]   word_addr;                   // 将输入地址addr拆分成这5个部分
 wire [  LINE_ADDR_LEN-1:0]   line_addr;
@@ -47,13 +46,14 @@ wire [31:0] mem_rd_line [LINE_SIZE];
 
 wire mem_gnt;      // 主存响应读写的握手信号
 integer hit_way = 0;        // 记录命中 way, 用于读取和写入
+integer hit_way_OK = 0;     // 用于 SWAP_IN_OK
 integer selected_way = 0;   // FIFO 选择换入的 way
 
 assign {unused_addr, tag_addr, set_addr, line_addr, word_addr} = addr;  // 拆分 32bit ADDR
 
 reg cache_hit = 1'b0;
 always @ (*) begin              // 判断 输入的address 是否在 cache 中命中
-    for (integer i = 0; i < WAY_SIZE; i++) begin
+    for (integer i = 0; i < WAY_CNT; i++) begin
         if (valid[set_addr][i] == 1'b1 && cache_tags[set_addr][i] == tag_addr) begin
             cache_hit = 1'b1;
             hit_way = i;
@@ -70,7 +70,7 @@ always @ (posedge clk or posedge rst) begin     // ?? cache ???
     if(rst) begin
         cache_stat <= IDLE;
         for(integer i = 0; i < SET_SIZE; i++) begin
-            for (integer j = 0; j < WAY_SIZE; j++) begin
+            for (integer j = 0; j < WAY_CNT; j++) begin
                 dirty[i][j] = 1'b0;
                 valid[i][j] = 1'b0;
                 fifo[i][j] = j;
@@ -101,6 +101,7 @@ always @ (posedge clk or posedge rst) begin     // ?? cache ???
                                     cache_stat  <= SWAP_IN;
                                 end
                                 {mem_rd_tag_addr, mem_rd_set_addr} <= {tag_addr, set_addr};
+                                hit_way_OK = hit_way;
                             end
                         end
                     end
@@ -115,9 +116,13 @@ always @ (posedge clk or posedge rst) begin     // ?? cache ???
                         end
                     end
         SWAP_IN_OK: begin           // 上一个周期换入成功，这周期将主存读出的line写入cache，并更新tag，置高valid，置低dirty
-                        static integer min = WAY_SIZE;      // 找出 fifo 最小的 且 不脏的 line 换入
-                        selected_way = hit_way;             // 若没有满足要求的 line, 则将换入到 hit_way 自身
-                        for (integer i = 0; i < WAY_SIZE; i++) begin
+                        static integer min = WAY_CNT;      // 找出 fifo 最小的 且 不脏的 line 换入
+                        selected_way = hit_way_OK;             // 若没有满足要求的 line, 则将换入到 hit_way 自身
+                        for (integer i = 0; i < WAY_CNT; i++) begin
+                            if (valid[mem_rd_set_addr][i] != 1'b1) begin
+                                selected_way = i;
+                                break;
+                            end
                             if (min > fifo[mem_rd_set_addr][i] && dirty[mem_rd_set_addr][i] == 1'b0)begin
                                min = fifo[mem_rd_set_addr][i];
                                selected_way = i;
@@ -128,9 +133,7 @@ always @ (posedge clk or posedge rst) begin     // ?? cache ???
                         cache_tags[mem_rd_set_addr][selected_way] <= mem_rd_tag_addr;
                         valid     [mem_rd_set_addr][selected_way] <= 1'b1;
                         dirty     [mem_rd_set_addr][selected_way] <= 1'b0;
-                        valid     [mem_rd_set_addr][hit_way] <= 1'b1;
-                        dirty     [mem_rd_set_addr][hit_way] <= 1'b0;
-                        fifo      [mem_rd_set_addr][selected_way] <= WAY_SIZE - 1;  //置为最大
+                        fifo      [mem_rd_set_addr][selected_way] <= WAY_CNT;  //置为最大
                         cache_stat <= IDLE;        // 回到就绪状态
                     end
         endcase

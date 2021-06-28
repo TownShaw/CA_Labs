@@ -6,7 +6,7 @@
 # 
 
 verilog_head = '''
-module mem #(                   // 
+module mem_QS #(                   // 
     parameter  ADDR_LEN  = 11   // 
 ) (
     input  clk, rst,
